@@ -1,0 +1,23 @@
+{
+  "name": "webaudio-mixer",
+  "version": "1.0.0",
+  "description": "webaudio audio mixer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "npx browserify --standalone mixer src/mixer.js -o dist/mixer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notedit/webaudio-mixer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/notedit/webaudio-mixer/issues"
+  },
+  "homepage": "https://github.com/notedit/webaudio-mixer#readme",
+  "dependencies": {
+    "browserify": "^17.0.0"
+  }
+}

@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title> webaudio mixer test </title>
+    <style type="text/css">
+        .room {
+            cursor: pointer;
+        }
+
+        div.select {
+            display: inline-block;
+            margin: 0 0 1em 0;
+        }
+    </style>
+
+    <script src="./mixer.js?a=bbbbb"></script>
+
+    <script type='text/javascript'>
+
+        window.localStorage.setItem('debug', '*');
+        let shouldStop = false;
+        let mediaRecorder;
+
+        async function start() {
+            const options = { mimeType: 'audio/webm' };
+            const recordedChunks = [];
+
+            const firstvideo = document.getElementById('firstvideo');
+            await firstvideo.play();
+            let stream = firstvideo.captureStream();
+
+            let source1 = new mixer.Source({
+                stream: stream,
+                muted: false
+            });
+
+            const audiomixer = new mixer.AudioMixer({});
+
+            audiomixer.addSource(source1);
+
+
+            setTimeout(async () => {
+                const secondvideo = document.getElementById('secondvideo');
+                await secondvideo.play();
+
+                let stream2 = secondvideo.captureStream();
+
+                let source2 = new mixer.Source({
+                    stream: stream2,
+                    muted: false
+                })
+
+                audiomixer.addSource(source2);
+
+            }, 3000);
+
+
+            console.dir(audiomixer.audioDestination.stream);
+
+            mediaRecorder = new MediaRecorder(audiomixer.audioDestination.stream, options);
+
+            mediaRecorder.ondataavailable = function (e) {
+
+                console.log("dataavailable ", e.data.size);
+
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+
+            };
+
+            mediaRecorder.onstop = function () {
+
+                var blob = new Blob(recordedChunks, {
+                    type: 'video/webm'
+                });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                document.body.appendChild(a);
+                a.style = 'display: none';
+                a.href = url;
+                a.download = 'test.webm';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+
+            mediaRecorder.start(1000);
+
+        }
+
+        function stop() {
+            mediaRecorder.stop();
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <h1>WebAudio Demo</h1>
+    <br />
+
+
+    <div>
+        <button onclick="start()">Start</button>
+        <br><br>
+        <button onclick="stop()">Stop</button>
+    </div>
+
+
+    <video id="firstvideo" playsinline controls loop>
+        <source src="./video_chrome.webm" type="video/webm" />
+        <p>This browser does not support the video element.</p>
+    </video>
+
+
+    <video id="secondvideo" playsinline controls loop>
+        <source src="./video_chrome.webm" type="video/webm" />
+        <p>This browser does not support the video element.</p>
+    </video>
+
+    <video id="mixvideo" playsinline autoplay></video>
+
+</body>
+
+
+</html>
