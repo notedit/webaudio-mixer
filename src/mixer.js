@@ -1,15 +1,29 @@
 
 
+// Stream Source
 class Source {
     constructor(options) {
         this._stream = options.stream;
         this._muted = options.muted;
+        this._audioCtx = options.audioCtx;
+        this._audioDestination = options.audioDestination;
+        this._startTime = this._audioCtx.currentTime;
     }
     get stream() {
         return this._stream;
     }
     get muted() {
         return this._muted;
+    }
+    
+    // buffer this a AudioBuffer  
+    // https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer 
+    feedAudo(buffer) {
+        var source = this._audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this._audioDestination);
+        // 计算startTime
+        source.start(this._startTime);  
     }
 }
 
@@ -27,6 +41,11 @@ class AudioMixer {
 
     get audioDestination() {
         return this._audioDestination;
+    }
+
+    createSource(stream) {
+        let source =  new Source({stream:stream});
+        return source;
     }
 
     addSource(source) {

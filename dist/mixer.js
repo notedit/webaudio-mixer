@@ -39,10 +39,7 @@ class AudioMixer {
         source.audioOutput.gain.value = 1;
 
         source.audioSource.connect(source.audioOutput);
-        source.audioOutput.connect(this._audioDestination);
-
-        console.log('inputs ', this._audioDestination.numberOfInputs)
-        
+        source.audioOutput.connect(this._audioDestination);        
     }
 
     removeSource(source) {
